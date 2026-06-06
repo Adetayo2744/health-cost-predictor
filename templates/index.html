@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Health Cost Predictor</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+
+html{
+scroll-behavior:smooth;
+}
+
+body{
+font-family: Arial, sans-serif;
+}
+
+/* PREMIUM BACKGROUND */
+
+body{
+
+background:
+linear-gradient(
+135deg,
+#eef4ff 0%,
+#dbeafe 25%,
+#c7d2fe 50%,
+#dbeafe 75%,
+#eef4ff 100%
+);
+
+background-size: 400% 400%;
+
+animation: gradientMove 15s ease infinite;
+
+}
+
+/* FLOATING BLUR EFFECT */
+
+body::before{
+
+content: "";
+
+position: fixed;
+
+top: -200px;
+left: -200px;
+
+width: 500px;
+height: 500px;
+
+background: rgba(59,130,246,0.18);
+
+filter: blur(120px);
+
+border-radius: 50%;
+
+z-index: -1;
+
+animation: floatOne 10s ease-in-out infinite;
+
+}
+
+body::after{
+
+content: "";
+
+position: fixed;
+
+bottom: -200px;
+right: -200px;
+
+width: 500px;
+height: 500px;
+
+background: rgba(99,102,241,0.18);
+
+filter: blur(120px);
+
+border-radius: 50%;
+
+z-index: -1;
+
+animation: floatTwo 12s ease-in-out infinite;
+
+}
+
+/* ANIMATIONS */
+
+@keyframes gradientMove{
+
+0%{
+background-position: 0% 50%;
+}
+
+50%{
+background-position: 100% 50%;
+}
+
+100%{
+background-position: 0% 50%;
+}
+
+}
+
+@keyframes floatOne{
+
+0%{
+transform: translateY(0px);
+}
+
+50%{
+transform: translateY(40px);
+}
+
+100%{
+transform: translateY(0px);
+}
+
+}
+
+@keyframes floatTwo{
+
+0%{
+transform: translateY(0px);
+}
+
+50%{
+transform: translateY(-40px);
+}
+
+100%{
+transform: translateY(0px);
+}
+
+}
+/* GLASS EFFECT */
+
+.glass{
+background:rgba(255,255,255,0.75);
+backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.4);
+}
+
+/* DARK MODE */
+
+.dark{
+background:#020617 !important;
+}
+
+.dark .glass{
+background:rgba(15,23,42,0.85);
+border:1px solid rgba(255,255,255,0.08);
+}
+
+.dark .darkText{
+color:white !important;
+}
+
+.dark .darkSub{
+color:#cbd5e1 !important;
+}
+
+.dark input,
+.dark select{
+background:#111827 !important;
+color:white !important;
+border-color:#374151 !important;
+}
+
+.dark option{
+background:#111827;
+color:white;
+}
+
+.dark .cardDark{
+background:#111827 !important;
+border-color:#374151 !important;
+}
+
+.dark .menuBtn:hover{
+background:#1e293b !important;
+}
+
+</style>
+
+</head>
+
+<body
+id="body"
+class="min-h-screen transition-all duration-500 overflow-x-hidden"
+>
+
+<div class="max-w-[1400px] mx-auto p-4 lg:p-8">
+
+<div class="grid lg:grid-cols-[320px_1fr] gap-8">
+
+<!-- SIDEBAR -->
+
+<div
+id="sidebar"
+class="glass rounded-[35px] shadow-2xl p-6 h-fit transition-all duration-500"
+>
+
+<!-- HEADER -->
+
+<div class="flex items-center gap-4 mb-10">
+
+<div class="w-14 h-14 rounded-3xl bg-blue-100 flex items-center justify-center text-3xl">
+🩺
+</div>
+
+
+</div>
+
+<!-- MENU -->
+
+<div class="space-y-4">
+
+<!-- DASHBOARD -->
+
+<div>
+
+<button class="menuBtn bg-blue-50 text-blue-600">
+🏠 Dashboard
+</button>
+
+</div>
+
+<!-- HISTORY -->
+
+<div>
+
+<button
+id="historyToggle"
+class="menuBtn darkText"
+>
+📜 Prediction History
+</button>
+
+<div
+id="historySection"
+class="hidden mt-3 ml-2"
+>
+
+<div class="flex gap-2 mb-3">
+
+<input
+type="text"
+id="searchHistory"
+placeholder="Search history..."
+class="w-full p-3 rounded-xl border outline-none text-sm"
+/>
+
+<button
+id="clearHistory"
+class="bg-red-500 hover:bg-red-600 text-white px-4 rounded-xl transition"
+>
+Clear
+</button>
+
+</div>
+
+<ul
+id="historyList"
+class="space-y-2 max-h-72 overflow-y-auto"
+>
+
+<li class="text-gray-400 darkSub text-sm">
+No prediction history yet
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<!-- ANALYTICS -->
+
+<div>
+
+<button
+id="analyticsToggle"
+class="menuBtn darkText"
+>
+📊 Analytics
+</button>
+
+<div
+id="analyticsSection"
+class="hidden mt-3 ml-2"
+>
+
+<div class="cardDark bg-white rounded-2xl p-4 border">
+
+<h2 class="text-lg font-bold text-gray-700 darkText">
+Total Predictions
+</h2>
+
+<p
+id="totalPredictions"
+class="text-4xl font-bold text-blue-600 mt-2"
+>
+0
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- SAVED -->
+
+<div>
+
+<button
+id="savedToggle"
+class="menuBtn darkText"
+>
+⭐ Saved Predictions
+</button>
+
+<div
+id="savedSection"
+class="hidden mt-3 ml-2"
+>
+
+<ul
+id="savedList"
+class="space-y-2"
+>
+
+<li class="text-gray-400 darkSub text-sm">
+No saved predictions yet
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div>
+
+<button
+id="settingsToggle"
+class="menuBtn darkText"
+>
+⚙️ Settings
+</button>
+
+<div
+id="settingsSection"
+class="hidden mt-3 ml-2"
+>
+
+<div class="cardDark bg-white rounded-2xl p-4 border space-y-4">
+
+<h2 class="text-xl font-bold text-gray-700 darkText">
+Settings
+</h2>
+
+<div class="flex items-center justify-between">
+
+<span class="darkText text-sm">
+Enable Animations
+</span>
+
+<input
+type="checkbox"
+id="animationToggle"
+checked
+class="w-5 h-5"
+/>
+
+</div>
+
+<div class="flex items-center justify-between">
+
+<span class="darkText text-sm">
+Dark Mode
+</span>
+
+<input
+type="checkbox"
+id="settingsDarkMode"
+class="w-5 h-5"
+/>
+
+</div>
+
+<div class="flex items-center justify-between">
+
+<span class="darkText text-sm">
+Auto Save Predictions
+</span>
+
+<input
+type="checkbox"
+id="autoSaveToggle"
+checked
+class="w-5 h-5"
+/>
+
+</div>
+
+<button
+id="resetApp"
+class="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl transition"
+>
+Reset Application
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- DARK MODE -->
+
+<div>
+
+<button
+id="darkModeButton"
+class="menuBtn darkText"
+>
+🌙 Dark Mode
+</button>
+
+</div>
+
+</div>
+
+<!-- FOOTER -->
+
+<div class="mt-10 glass rounded-3xl p-6">
+
+<h3 class="font-bold text-gray-700 darkText">
+Health Cost Predictor
+</h3>
+
+<p class="text-gray-500 darkSub mt-2">
+made by Adetayo Oluwole
+</p>
+
+</div>
+
+</div>
+
+<!-- MAIN CONTENT -->
+
+<div class="glass rounded-[40px] shadow-2xl p-5 lg:p-7 self-start">
+
+<!-- TOP -->
+
+<div class="flex items-center justify-between mb-12">
+
+<div>
+
+<h1 class="text-5xl font-bold text-gray-800 darkText">
+Health Cost Predictor
+</h1>
+
+<p class="text-gray-500 darkSub mt-2">
+Predict insurance costs instantly
+</p>
+
+</div>
+
+<div class="hidden lg:flex w-16 h-16 rounded-3xl bg-blue-100 items-center justify-center text-3xl">
+📈
+</div>
+
+</div>
+
+<!-- FORM -->
+
+<form method="POST" id="predictionForm" class="space-y-4">
+
+<!-- AGE -->
+
+<div class="grid md:grid-cols-[180px_1fr] gap-5 items-center">
+
+<label class="font-semibold text-gray-700 darkText">
+👤 Age
+</label>
+
+<input
+type="number"
+name="age"
+required
+placeholder="Enter age"
+class="inputStyle"
+/>
+
+</div>
+
+<!-- GENDER -->
+
+<div class="grid md:grid-cols-[180px_1fr] gap-5 items-center">
+
+<label class="font-semibold text-gray-700 darkText">
+⚥ Gender
+</label>
+
+<select
+name="sex"
+required
+class="inputStyle"
+>
+
+<option value="">
+Select gender
+</option>
+
+<option value="male">
+Male
+</option>
+
+<option value="female">
+Female
+</option>
+
+</select>
+
+</div>
+
+<!-- BMI -->
+
+<div class="grid md:grid-cols-[180px_1fr] gap-5 items-center">
+
+<label class="font-semibold text-gray-700 darkText">
+📋 BMI
+</label>
+
+<input
+type="number"
+step="0.1"
+name="bmi"
+required
+placeholder="Enter BMI"
+class="inputStyle"
+/>
+
+</div>
+
+<!-- SMOKER -->
+
+<div class="grid md:grid-cols-[180px_1fr] gap-5 items-center">
+
+<label class="font-semibold text-gray-700 darkText">
+🚭 Smoking
+</label>
+
+<select
+name="smoker"
+required
+class="inputStyle"
+>
+
+<option value="">
+Select smoking status
+</option>
+
+<option value="yes">
+Yes
+</option>
+
+<option value="no">
+No
+</option>
+
+</select>
+
+</div>
+
+<!-- CHILDREN -->
+
+<div class="grid md:grid-cols-[180px_1fr] gap-5 items-center">
+
+<label class="font-semibold text-gray-700 darkText">
+👨‍👩‍👧 Children
+</label>
+
+<input
+type="number"
+name="children"
+required
+placeholder="Enter number of children"
+class="inputStyle"
+/>
+
+</div>
+
+<!-- REGION -->
+
+<div class="grid md:grid-cols-[180px_1fr] gap-5 items-center">
+
+<label class="font-semibold text-gray-700 darkText">
+📍 Region
+</label>
+
+<select
+name="region"
+required
+class="inputStyle"
+>
+
+<option value="northeast">
+Northeast
+</option>
+
+<option value="northwest">
+Northwest
+</option>
+
+<option value="southeast">
+Southeast
+</option>
+
+<option value="southwest">
+Southwest
+</option>
+
+</select>
+
+</div>
+
+<!-- BUTTON -->
+
+<button
+type="submit"
+class="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-5 rounded-3xl font-bold text-xl shadow-xl hover:scale-[1.01] transition-all duration-300"
+>
+🧮 Predict Cost
+</button>
+
+</form>
+
+<!-- RESULT -->
+
+{% if prediction %}
+
+<div
+id="predictionCard"
+class="mt-10 cardDark bg-white rounded-[35px] p-8 border"
+>
+
+<div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+
+<div>
+
+<p class="text-2xl font-bold text-gray-700 darkText">
+Predicted Health Cost
+</p>
+
+<h2
+id="predictionValue"
+class="text-6xl lg:text-7xl font-extrabold text-blue-600 mt-4"
+>
+${{ prediction }}
+</h2>
+
+</div>
+
+<button
+id="savePredictionButton"
+class="bg-green-500 hover:bg-green-600 text-white px-6 py-4 rounded-2xl font-semibold transition"
+>
+⭐ Save Prediction
+</button>
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* INPUT STYLING */
+
+document.querySelectorAll(".inputStyle")
+.forEach(el => {
+
+el.classList.add(
+"w-full",
+"p-5",
+"rounded-2xl",
+"border",
+"border-gray-200",
+"bg-white",
+"outline-none",
+"focus:ring-4",
+"focus:ring-blue-100",
+"transition-all",
+"duration-300"
+);
+
+});
+
+/* MENU BUTTON STYLE */
+
+document.querySelectorAll(".menuBtn")
+.forEach(el => {
+
+el.classList.add(
+"w-full",
+"text-left",
+"p-4",
+"rounded-2xl",
+"font-semibold",
+"hover:bg-blue-50",
+"transition-all",
+"duration-300"
+);
+
+});
+
+/* SECTION TOGGLE */
+
+const sections = [
+"historySection",
+"analyticsSection",
+"savedSection",
+"settingsSection"
+];
+
+function toggleSection(id){
+
+sections.forEach(section => {
+
+if(section !== id){
+document
+.getElementById(section)
+.classList.add("hidden");
+}
+
+});
+
+document
+.getElementById(id)
+.classList.toggle("hidden");
+
+}
+
+document
+.getElementById("historyToggle")
+.onclick = () => toggleSection("historySection");
+
+document
+.getElementById("analyticsToggle")
+.onclick = () => toggleSection("analyticsSection");
+
+document
+.getElementById("savedToggle")
+.onclick = () => toggleSection("savedSection");
+
+document
+.getElementById("settingsToggle")
+.onclick = () => toggleSection("settingsSection");
+
+
+/* DARK MODE */
+
+let darkMode =
+localStorage.getItem("darkMode") === "enabled";
+
+function applyDarkMode(){
+
+const body =
+document.getElementById("body");
+
+if(darkMode){
+
+body.classList.add("dark");
+
+document
+.getElementById("settingsDarkMode")
+.checked = true;
+
+document
+.getElementById("darkModeButton")
+.innerHTML = "☀️ Light Mode";
+
+}else{
+
+body.classList.remove("dark");
+
+document
+.getElementById("settingsDarkMode")
+.checked = false;
+
+document
+.getElementById("darkModeButton")
+.innerHTML = "🌙 Dark Mode";
+
+}
+
+}
+
+applyDarkMode();
+
+document
+.getElementById("darkModeButton")
+.onclick = function(){
+
+darkMode = !darkMode;
+
+localStorage.setItem(
+"darkMode",
+darkMode
+? "enabled"
+: "disabled"
+);
+
+applyDarkMode();
+
+};
+
+document
+.getElementById("settingsDarkMode")
+.onclick = function(){
+
+darkMode = this.checked;
+
+localStorage.setItem(
+"darkMode",
+darkMode
+? "enabled"
+: "disabled"
+);
+
+applyDarkMode();
+
+};
+
+/* HISTORY */
+
+let historyData =
+JSON.parse(
+localStorage.getItem("predictionHistory")
+) || [];
+
+const historyList =
+document.getElementById("historyList");
+
+function renderHistory(data){
+
+historyList.innerHTML = "";
+
+if(data.length === 0){
+
+historyList.innerHTML =
+'<li class="text-gray-400">No prediction history yet</li>';
+
+return;
+
+}
+
+data.forEach(item => {
+
+const li =
+document.createElement("li");
+
+li.className =
+"cardDark bg-white p-4 rounded-2xl border";
+
+li.innerHTML = item;
+
+historyList.appendChild(li);
+
+});
+
+}
+
+renderHistory(historyData);
+
+/* SAVE HISTORY */
+
+window.onload = function(){
+
+const predictionElement =
+document.getElementById("predictionValue");
+
+if(!predictionElement) return;
+
+const prediction =
+predictionElement.innerText;
+
+const formData = {
+
+age:
+localStorage.getItem("lastAge"),
+
+sex:
+localStorage.getItem("lastSex"),
+
+bmi:
+localStorage.getItem("lastBmi"),
+
+smoker:
+localStorage.getItem("lastSmoker"),
+
+children:
+localStorage.getItem("lastChildren"),
+
+region:
+localStorage.getItem("lastRegion")
+
+};
+
+const time =
+new Date().toLocaleString();
+
+const historyItem = `
+<div class="space-y-1">
+<p><strong>Prediction:</strong> ${prediction}</p>
+<p><strong>Age:</strong> ${formData.age}</p>
+<p><strong>Gender:</strong> ${formData.sex}</p>
+<p><strong>BMI:</strong> ${formData.bmi}</p>
+<p><strong>Smoker:</strong> ${formData.smoker}</p>
+<p><strong>Children:</strong> ${formData.children}</p>
+<p><strong>Region:</strong> ${formData.region}</p>
+<p><strong>Time:</strong> ${time}</p>
+</div>
+`;
+
+if(
+historyData.length === 0 ||
+historyData[0] !== historyItem
+){
+
+historyData.unshift(historyItem);
+
+localStorage.setItem(
+"predictionHistory",
+JSON.stringify(historyData)
+);
+
+renderHistory(historyData);
+
+}
+
+updateAnalytics();
+
+};
+
+/* FORM SAVE */
+
+document
+.getElementById("predictionForm")
+.addEventListener("submit", function(){
+
+localStorage.setItem(
+"lastAge",
+document.querySelector('[name="age"]').value
+);
+
+localStorage.setItem(
+"lastSex",
+document.querySelector('[name="sex"]').value
+);
+
+localStorage.setItem(
+"lastBmi",
+document.querySelector('[name="bmi"]').value
+);
+
+localStorage.setItem(
+"lastSmoker",
+document.querySelector('[name="smoker"]').value
+);
+
+localStorage.setItem(
+"lastChildren",
+document.querySelector('[name="children"]').value
+);
+
+localStorage.setItem(
+"lastRegion",
+document.querySelector('[name="region"]').value
+);
+
+});
+
+/* SEARCH */
+
+document
+.getElementById("searchHistory")
+.addEventListener("input", function(){
+
+const value =
+this.value.toLowerCase();
+
+const filtered =
+historyData.filter(item =>
+item.toLowerCase().includes(value)
+);
+
+renderHistory(filtered);
+
+});
+
+/* CLEAR */
+
+document
+.getElementById("clearHistory")
+.onclick = function(){
+
+historyData = [];
+
+localStorage.removeItem("predictionHistory");
+
+renderHistory(historyData);
+
+updateAnalytics();
+
+};
+
+/* ANALYTICS */
+
+function updateAnalytics(){
+
+document
+.getElementById("totalPredictions")
+.innerText = historyData.length;
+
+}
+
+updateAnalytics();
+
+/* SAVED PREDICTIONS */
+
+const saveButton =
+document.getElementById("savePredictionButton");
+
+if(saveButton){
+
+saveButton.onclick = function(){
+
+const prediction =
+document.getElementById("predictionValue")
+.innerText;
+
+let saved =
+JSON.parse(
+localStorage.getItem("savedPredictions")
+) || [];
+
+saved.unshift(prediction);
+
+localStorage.setItem(
+"savedPredictions",
+JSON.stringify(saved)
+);
+
+renderSaved();
+
+};
+
+}
+
+function renderSaved(){
+
+const savedList =
+document.getElementById("savedList");
+
+let saved =
+JSON.parse(
+localStorage.getItem("savedPredictions")
+) || [];
+
+savedList.innerHTML = "";
+
+if(saved.length === 0){
+
+savedList.innerHTML =
+'<li class="text-gray-400">No saved predictions yet</li>';
+
+return;
+
+}
+
+saved.forEach((item,index) => {
+
+const li =
+document.createElement("li");
+
+li.className =
+"cardDark bg-white p-4 rounded-2xl border flex items-center justify-between gap-3";
+
+li.innerHTML = `
+
+<div class="font-semibold text-blue-600">
+${item}
+</div>
+
+<button
+onclick="removeSavedPrediction(${index})"
+class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-xl text-sm transition"
+>
+Remove
+</button>
+
+`;
+
+savedList.appendChild(li);
+
+});
+
+}
+
+function removeSavedPrediction(index){
+
+let saved =
+JSON.parse(
+localStorage.getItem("savedPredictions")
+) || [];
+
+saved.splice(index,1);
+
+localStorage.setItem(
+"savedPredictions",
+JSON.stringify(saved)
+);
+
+renderSaved();
+
+}
+
+/* SETTINGS */
+
+document
+.getElementById("animationToggle")
+.addEventListener("change", function(){
+
+document.body.style.transition =
+this.checked
+? "all 0.5s ease"
+: "none";
+
+});
+
+document
+.getElementById("autoSaveToggle")
+.addEventListener("change", function(){
+
+localStorage.setItem(
+"autoSave",
+this.checked
+);
+
+});
+
+document
+.getElementById("resetApp")
+.onclick = function(){
+
+localStorage.clear();
+
+location.reload();
+
+};
+
+/* CLOSE PANELS WHEN CLICKING OUTSIDE */
+
+document.addEventListener("click", function(event){
+
+const sidebar =
+document.getElementById("sidebar");
+
+const clickedToggle =
+event.target.closest(
+"#historyToggle, #analyticsToggle, #savedToggle, #settingsToggle"
+);
+
+if(
+!sidebar.contains(event.target)
+&& !clickedToggle
+){
+
+document
+.getElementById("historySection")
+.classList.add("hidden");
+
+document
+.getElementById("analyticsSection")
+.classList.add("hidden");
+
+document
+.getElementById("savedSection")
+.classList.add("hidden");
+
+document
+.getElementById("settingsSection")
+.classList.add("hidden");
+
+}
+
+});
+
+/* HIDE OLD PREDICTION WHEN USER STARTS NEW INPUT */
+
+const formInputs =
+document.querySelectorAll(
+'#predictionForm input, #predictionForm select'
+);
+
+formInputs.forEach(input => {
+
+input.addEventListener("input", function(){
+
+const predictionCard =
+document.getElementById("predictionCard");
+
+if(predictionCard){
+
+predictionCard.style.display = "none";
+
+}
+
+});
+
+});
+
+
+</script>
+
+</body>
+
+</html>

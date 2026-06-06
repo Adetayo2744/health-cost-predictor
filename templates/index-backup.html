@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Cost Predictor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-200 min-h-screen">
+
+    <div class="flex items-center justify-center min-h-screen px-4">
+
+        <div class="bg-white p-6 md:p-10 rounded-3xl shadow-2xl w-full max-w-3xl">
+
+            <!-- MENU BUTTON -->
+            <!-- MENU BUTTON -->
+<div class="flex justify-start relative">
+
+    <button
+        type="button"
+        onclick="toggleMenu()"
+        class="text-3xl font-bold text-gray-700"
+    >
+        ☰
+    </button>
+
+    <div id="menu"
+class="hidden fixed top-0 left-0 h-full w-80 bg-white shadow-2xl p-6 z-50 border-r border-gray-200 overflow-y-auto transition-all duration-300">
+
+        <div class="flex items-center justify-between mb-6">
+
+<h2 class="text-2xl font-bold text-gray-800">
+Dashboard
+</h2>
+
+<button
+onclick="toggleMenu()"
+class="text-2xl text-gray-500 hover:text-black">
+✕
+</button>
+
+</div>
+
+<div class="space-y-2 mb-6">
+
+<div class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all duration-300 font-semibold text-gray-700">
+🏠 Dashboard
+</div>
+
+<div
+id="predictionHistoryButton"
+class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all duration-300 font-semibold text-gray-700"
+>
+📜 Prediction History
+</div>
+
+<div id="historySection" class="hidden mt-3">
+
+<button
+id="clearHistory"
+class="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-xl mb-4"
+>
+Clear History
+</button>
+
+<ul id="historyList" class="space-y-3 text-sm text-gray-700">
+<li class="text-gray-400">
+No prediction history yet
+</li>
+</ul>
+
+</div>
+
+<div class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all duration-300 font-semibold text-gray-700">
+🔍 Search History
+</div>
+
+<div class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all duration-300 font-semibold text-gray-700">
+📊 Analytics
+</div>
+
+<div class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all duration-300 font-semibold text-gray-700">
+⭐ Saved Predictions
+</div>
+
+<div class="flex items-center gap-3 p-4 rounded-2xl hover:bg-blue-50 hover:text-blue-600 cursor-pointer transition-all duration-300 font-semibold text-gray-700">
+⚙️ Settings
+</div>
+
+</div>
+
+        
+
+    </div>
+
+</div>
+
+            <!-- TITLE -->
+            <h1 class="text-4xl font-bold text-center text-blue-900 mb-8">
+                Health Cost Predictor
+            </h1>
+
+            <!-- FORM -->
+           <form method="POST" class="space-y-5">
+
+    <!-- AGE -->
+    <input
+        type="number"
+        name="age"
+        placeholder="Age"
+        required
+        class="w-full p-4 border rounded-xl text-gray-700 placeholder-gray-700"
+    >
+
+    <!-- GENDER -->
+    <select
+    name="sex"
+    required
+    class="w-full p-4 border rounded-xl text-gray-700"
+>
+    <option value="" disabled selected>Gender</option>
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+</select>
+
+    <!-- BMI -->
+    <input
+        <input
+    type="number"
+    step="0.1"
+    name="bmi"
+    placeholder="BMI"
+    required
+    class="w-full p-4 border rounded-xl text-gray-700 placeholder-gray-700"
+    >
+
+    <!-- SMOKER -->
+    <select
+    name="smoker"
+    required
+    class="w-full p-4 border rounded-xl text-gray-700"
+>
+    <option value="" disabled selected>Smoking Status</option>
+    <option value="yes">Yes</option>
+    <option value="no">No</option>
+</select>
+    <!-- CHILDREN -->
+    <input
+    type="number"
+    name="children"
+    placeholder="Number of Children"
+    min="0"
+    max="10"
+    required
+    class="w-full p-4 border rounded-x1 text-gray-700 placeholder-gray-700"
+>
+
+    <!-- REGION -->
+    <select
+        name="region"
+        class="w-full p-4 border rounded-xl"
+    >
+        <option value="northeast">Northeast</option>
+        <option value="northwest">Northwest</option>
+        <option value="southeast">Southeast</option>
+        <option value="southwest">Southwest</option>
+    </select>
+
+    <!-- BUTTON -->
+    <button
+        type="submit"
+        class="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl font-semibold"
+    >
+        Predict Cost
+    </button>
+
+</form>
+
+<!-- RESULT -->
+{% if prediction %}
+<div class="mt-8 text-center">
+
+    <h2 class="text-5xl font-bold text-blue-600">
+        ${{ prediction }}
+    </h2>
+
+</div>
+{% endif %}
+
+
+
+<script>
+
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("hidden");
+}
+
+const form = document.querySelector("form");
+
+console.log("Form connected");
+
+form.addEventListener("submit", function () {
+
+    localStorage.setItem(
+        "lastAge",
+        document.querySelector('[name="age"]').value
+    );
+
+    localStorage.setItem(
+        "lastSex",
+        document.querySelector('[name="sex"]').value
+    );
+
+    localStorage.setItem(
+        "lastBmi",
+        document.querySelector('[name="bmi"]').value
+    );
+
+    localStorage.setItem(
+        "lastSmoker",
+        document.querySelector('[name="smoker"]').value
+    );
+
+    localStorage.setItem(
+        "lastChildren",
+        document.querySelector('[name="children"]').value
+    );
+
+    localStorage.setItem(
+        "lastRegion",
+        document.querySelector('[name="region"]').value
+    );
+
+});
+
+const historyList =
+    document.getElementById("historyList");
+
+let savedHistory =
+    JSON.parse(
+        localStorage.getItem("predictionHistory")
+    ) || [];
+
+
+/* SHOW SAVED HISTORY */
+
+function displayHistory() {
+
+    historyList.innerHTML = "";
+
+    if(savedHistory.length === 0){
+
+        historyList.innerHTML = `
+            <li class="text-gray-400">
+                No prediction history yet
+            </li>
+        `;
+
+        return;
+    }
+
+    savedHistory.forEach(function(item){
+
+        const li =
+            document.createElement("li");
+
+        li.className =
+            "bg-gray-100 p-3 rounded-xl border text-sm";
+
+        li.innerHTML = item;
+
+        historyList.appendChild(li);
+
+    });
+
+}
+
+displayHistory();
+
+
+/* SAVE NEW HISTORY */
+
+window.addEventListener("load", function () {
+
+    const predictionElement =
+        document.querySelector("h2");
+
+    if (!predictionElement) return;
+
+    const prediction =
+    document.querySelector(".text-blue-600").innerText;
+
+    const age =
+    localStorage.getItem("lastAge");
+
+const sex =
+    localStorage.getItem("lastSex");
+
+const bmi =
+    localStorage.getItem("lastBmi");
+
+const smoker =
+    localStorage.getItem("lastSmoker");
+
+const children =
+    localStorage.getItem("lastChildren");
+
+const region =
+    localStorage.getItem("lastRegion");
+
+    const currentTime =
+        new Date().toLocaleString();
+
+    const historyText = `
+        <div class="space-y-1 bg-gray-100 p-4 rounded-xl mb-3">
+            <p><strong>Age:</strong> ${age}</p>
+            <p><strong>Gender:</strong> ${sex}</p>
+            <p><strong>BMI:</strong> ${bmi}</p>
+            <p><strong>Smoker:</strong> ${smoker}</p>
+            <p><strong>Children:</strong> ${children}</p>
+            <p><strong>Region:</strong> ${region}</p>
+            <p><strong>Prediction:</strong> ${prediction}</p>
+            <p><strong>Time:</strong> ${currentTime}</p>
+        </div>
+    `;
+
+    const latestEntry =
+        savedHistory[0];
+
+    if (
+        !latestEntry ||
+        !latestEntry.includes(prediction)
+    ) {
+
+        savedHistory.unshift(historyText);
+
+        localStorage.setItem(
+            "predictionHistory",
+            JSON.stringify(savedHistory)
+        );
+
+        displayHistory();
+
+    }
+
+});
+
+const inputs = document.querySelectorAll("input, select");
+
+inputs.forEach((input) => {
+
+    input.addEventListener("input", function () {
+
+        const predictionText =
+            document.querySelector(".text-blue-600");
+
+        if (predictionText) {
+
+            predictionText.innerText = "";
+
+        }
+
+    });
+
+});
+
+const clearButton =
+    document.getElementById("clearHistory");
+
+clearButton.addEventListener("click", function () {
+
+    localStorage.removeItem("predictionHistory");
+
+    savedHistory = [];
+
+    displayHistory();
+
+});
+
+
+
+document.addEventListener("click", function(event) {
+
+    const menu =
+        document.getElementById("menu");
+
+    const button =
+        document.querySelector("button");
+
+    if (
+        !menu.contains(event.target) &&
+        !button.contains(event.target)
+    ) {
+        menu.classList.add("hidden");
+    }
+
+});
+
+const predictionHistoryButton =
+document.getElementById("predictionHistoryButton");
+
+const historySection =
+document.getElementById("historySection");
+
+predictionHistoryButton.addEventListener("click", function () {
+
+historySection.classList.toggle("hidden");
+
+});
+
+</script>
+
+</body>
+</html>
